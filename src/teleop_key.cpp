@@ -4,7 +4,7 @@
 #include <termios.h>
 #include <stdio.h>
 
-#define KEYCODE_R 0x43 
+#define KEYCODE_R 0x43
 #define KEYCODE_L 0x44
 #define KEYCODE_UP 0x41
 #define KEYCODE_DOWN 0x42
