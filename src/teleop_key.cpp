@@ -17,6 +17,8 @@
 #define KEYCODE_E 0x65
 #define KEYCODE_SPACE 0x20
 
+using namespace std;
+
 class TeleopTurtle
 {
 public:
@@ -36,8 +38,8 @@ private:
 TeleopTurtle::TeleopTurtle()://コンストラクタ
   linear_(0),
   angular_(0),
-  l_scale_(2.0),
-  a_scale_(2.0)
+  l_scale_(1.1),
+  a_scale_(1.1)
 {
   nh_.param("scale_angular", a_scale_, a_scale_);//pram,default
   nh_.param("scale_linear", l_scale_, l_scale_);//pram,default
@@ -101,7 +103,7 @@ void TeleopTurtle::keyLoop()
   puts("---------------------------");
   puts("Use arrow keys to move the turtle.");
 
-
+  int i;
   for(;;)
   {
     // get the next event from the keyboard  
@@ -113,50 +115,73 @@ void TeleopTurtle::keyLoop()
 
     linear_=angular_=0;
     ROS_DEBUG("value: 0x%02X\n", c);
-  
+	
+	geometry_msgs::Twist twist;
+	geometry_msgs::Vector3 zero;
+	zero.x = zero.y = zero.z = 0.0;
     switch(c)
     {
-      case KEYCODE_L:
+      case KEYCODE_A:
         ROS_DEBUG("LEFT");
-        angular_ += 1.0;
+		cout << "LEFT" << endl;
+        twist.linear.y = l_scale_*1.0;
         dirty = true;
         break;
-      case KEYCODE_R:
+      case KEYCODE_D:
         ROS_DEBUG("RIGHT");
-        angular_ += -1.0;
+		cout << "RIGHT" << endl;
+        twist.linear.y = l_scale_*-1.0;
         dirty = true;
         break;
       case KEYCODE_UP:
         ROS_DEBUG("FRONT");
-        linear_ += 1.0;
+		cout << "FRONT" << endl;
+        twist.linear.x = l_scale_*1.0;
         dirty = true;
         break;
       case KEYCODE_DOWN:
-        ROS_DEBUG("DOWN");
-        linear_ += -1.0;
+        ROS_DEBUG("BACK");
+		cout << "BACK" << endl;
+        twist.linear.x = l_scale_*-1.0;
         dirty = true;
         break;
 	  case KEYCODE_W:
         ROS_DEBUG("UP");
-        linear_ = 1.0;
+		cout << "UP" << endl;
+        twist.linear.z = l_scale_*1.0;
         dirty = true;
         break;
 	  case KEYCODE_S:
-        ROS_DEBUG("UP");
-        linear_ = -1.0;
+        ROS_DEBUG("DOWN");
+		cout << "DOWN" << endl;
+        twist.linear.z = l_scale_*-1.0;
+        dirty = true;
+        break;
+	  case KEYCODE_L:
+        ROS_DEBUG("YAW_L");
+		cout << "YAW_L" << endl;
+        twist.angular.z = a_scale_*1.0;
+        dirty = true;
+        break;
+	  case KEYCODE_R:
+        ROS_DEBUG("YAW_R");
+		cout << "YAW_R" << endl;
+        twist.angular.z = a_scale_*-1.0;
         dirty = true;
         break;
 	  case KEYCODE_SPACE:
 		ROS_DEBUG("STOP");
-        linear_ = 0.0;
+		cout << "STOP" << endl;
+        twist.linear = zero;
+		twist.angular = zero;
         dirty = true;
         break;
     }
    
 
-    geometry_msgs::Twist twist;
-    twist.angular.z = a_scale_*angular_;
-    twist.linear.z = l_scale_*linear_;
+    
+    //twist.angular.z = a_scale_*angular_;
+    //twist.linear.z = l_scale_*linear_;
     if(/*dirty ==*/true)
     {
       twist_pub_.publish(twist);    
